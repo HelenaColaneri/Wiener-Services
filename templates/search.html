@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Wiener Servicios - Buscador</title>
+
+  <style>
+    body{
+      margin:0;
+      font-family:system-ui,Segoe UI,Arial;
+      background:#0b0f1a;
+      color:#e9eefc;
+      min-height:100vh;
+      padding:24px;
+    }
+
+    .wrap{max-width:980px;margin:0 auto;}
+
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:18px;
+      background:rgba(255,255,255,.04);
+      padding:16px 18px;
+    }
+
+    .left{display:flex;align-items:center;gap:12px;}
+
+    .logo{
+      width:40px;
+      height:40px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.12);
+      overflow:hidden;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    .logo img{width:100%;height:100%;object-fit:cover}
+
+    h1{margin:0;font-size:16px}
+    .muted{color:#aeb8d6;font-size:12px}
+
+    a{color:#4ea3ff;text-decoration:none}
+
+    .top-actions{
+      display:flex;
+      align-items:center;
+      gap:14px;
+    }
+
+    .excel-btn img{
+      width:34px;
+      height:34px;
+      cursor:pointer;
+      transition:transform .15s ease;
+    }
+
+    .excel-btn img:hover{
+      transform:scale(1.08);
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:1fr 1.2fr;
+      gap:18px;
+      margin-top:18px;
+    }
+
+    @media(max-width:860px){
+      .grid{grid-template-columns:1fr}
+    }
+
+    .panel{
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:18px;
+      background:rgba(255,255,255,.04);
+      padding:18px;
+    }
+
+    /* 🔽 BUSCADOR */
+    .search-form{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:20px;
+    }
+
+    input{
+      width:100%;
+      max-width:380px;
+      padding:10px 14px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.18);
+      background:#0f1623;
+      color:#e9eefc;
+    }
+
+    button{
+      width:100%;
+      max-width:380px;
+      padding:10px;
+      border-radius:12px;
+      border:none;
+      background:#4ea3ff;
+      color:#000;
+      font-weight:700;
+      cursor:pointer;
+    }
+
+    .secondary-btn{
+      display:inline-block;
+      margin-top:14px;
+      padding:10px 14px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.18);
+    }
+
+    /* RESULTADO */
+    .thumb{
+      width:200px;
+      height:200px;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.12);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#aeb8d6;
+      font-size:12px;
+      text-align:center;
+    }
+
+    .thumb img{width:100%;height:100%;object-fit:cover}
+
+    .kv{
+      display:grid;
+      grid-template-columns:140px 1fr;
+      gap:8px;
+      font-size:13px;
+      margin-top:8px;
+    }
+
+    .k{color:#aeb8d6}
+
+    .tag{margin-top:10px;font-size:12px}
+
+    /* 🗑️ BOTÓN ELIMINAR */
+    .delete-wrapper{
+      margin-top:18px;
+      display:flex;
+      justify-content:center;
+    }
+
+    .delete-btn{
+      background:#ff4e6a;
+      color:white;
+      border:none;
+      padding:8px 18px;
+      border-radius:999px;
+      font-weight:600;
+      font-size:.95rem;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+  </style>
+</head>
+
+<body>
+<div class="wrap">
+
+  <div class="topbar">
+    <div class="left">
+      <div class="logo">
+        <img src="{{ url_for('static', filename='images/logo-wiener.png') }}">
+      </div>
+      <div>
+        <h1>Wiener Servicios</h1>
+        <div class="muted">Buscador de repuestos</div>
+      </div>
+    </div>
+
+    <!-- 🔥 ACCIONES TOP -->
+    <div class="top-actions">
+      <a href="{{ url_for('abrir_excel_master') }}" class="excel-btn" title="Abrir Excel maestro">
+        <img src="{{ url_for('static', filename='images/excel.png') }}" alt="Excel">
+      </a>
+      <a href="{{ url_for('logout') }}">Cerrar sesión</a>
+    </div>
+  </div>
+
+  <div class="grid">
+
+    <!-- BUSCADOR -->
+    <div class="panel">
+      <form method="post" action="{{ url_for('search_post') }}" class="search-form">
+        <input name="query" value="{{ q }}" placeholder="Código Wiener u Original">
+        <button type="submit">Buscar</button>
+      </form>
+
+      <div style="text-align:center;">
+        <a href="{{ url_for('add_part_get') }}" class="secondary-btn">+ Agregar repuesto</a>
+      </div>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+          <div class="{{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endwith %}
+    </div>
+
+    <!-- RESULTADO -->
+    <div class="panel">
+      <h2>Resultado</h2>
+
+      {% if part %}
+        <div style="display:flex;gap:16px">
+          <div class="thumb">
+            {% if part['imagen'] %}
+              <img src="{{ url_for('static', filename=part['imagen']) }}">
+            {% else %}
+              Sin imagen
+            {% endif %}
+          </div>
+
+          <div>
+            <strong>{{ part['nombre'] }}</strong>
+
+            <div class="kv">
+              <div class="k">Código Wiener</div><div>{{ part['codigo_wiener'] }}</div>
+              <div class="k">Código Original</div><div>{{ part['codigo_original'] }}</div>
+              <div class="k">Descripción</div><div>{{ part['descripcion'] }}</div>
+              <div class="k">Equipo</div><div>{{ part['equipo'] }}</div>
+              <div class="k">Notas</div><div>{{ part['notas'] }}</div>
+            </div>
+
+            <div class="tag">Estado: {{ part['estado'] or '-' }}</div>
+
+            <div class="delete-wrapper">
+              <form method="post"
+                    action="{{ url_for('delete_part', part_id=part['id']) }}"
+                    onsubmit="return confirm('¿Eliminar este repuesto?');">
+                <button type="submit" class="delete-btn">
+                  🗑️ Eliminar
+                </button>
+              </form>
+            </div>
+
+          </div>
+        </div>
+      {% else %}
+        <div class="muted">Todavía no hay resultados.</div>
+      {% endif %}
+    </div>
+
+  </div>
+</div>
+</body>
+</html>

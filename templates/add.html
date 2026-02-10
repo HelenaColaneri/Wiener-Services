@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Wiener Servicios - Agregar repuesto</title>
+  <style>
+    body{ background:#0b1020; color:#e9eefc; font-family:system-ui,Segoe UI,Arial; margin:0; }
+    .wrap{ max-width:720px; margin:40px auto; padding:0 16px; }
+    .panel{ background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); border-radius:18px; padding:18px; }
+    h1{ margin:0 0 14px; font-size:20px; }
+    label{ display:block; margin:12px 0 6px; opacity:.9; font-size:13px; }
+    input, textarea, select{
+      width:100%; max-width:520px;
+      padding:10px 12px; border-radius:12px;
+      border:1px solid rgba(255,255,255,.18);
+      background:#0f1623; color:#e9eefc;
+      font-size:14px;
+    }
+    textarea{ min-height:90px; resize:vertical; }
+    .row{ display:flex; flex-direction:column; align-items:flex-start; gap:12px; }
+    .actions{ margin-top:16px; display:flex; gap:10px; flex-wrap:wrap; }
+    button, .btn{
+      padding:10px 14px; border-radius:12px;
+      border:1px solid rgba(255,255,255,.18);
+      background:#1b2a44; color:#e9eefc;
+      cursor:pointer; text-decoration:none; display:inline-block;
+    }
+    button:hover, .btn:hover{ filter:brightness(1.08); }
+    .error{ margin-top:12px; padding:10px 12px; border-radius:12px; background:rgba(255,80,80,.15); border:1px solid rgba(255,80,80,.35); }
+    .ok{ margin-top:12px; padding:10px 12px; border-radius:12px; background:rgba(80,255,140,.12); border:1px solid rgba(80,255,140,.3); }
+    .hint{ font-size:12px; opacity:.8; margin-top:4px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="panel">
+      <h1>Agregar repuesto</h1>
+
+      {% if error %}
+        <div class="error">{{ error }}</div>
+      {% endif %}
+      {% if ok %}
+        <div class="ok">{{ ok }}</div>
+      {% endif %}
+
+      <form method="post" action="{{ url_for('add_part_post') }}" enctype="multipart/form-data" class="row">
+        <label>Imagen (opcional)</label>
+        <input type="file" name="image" accept=".png,.jpg,.jpeg,.webp">
+        <div class="hint">Se guarda en <b>static/images</b>. Recomendado: JPG o PNG.</div>
+
+        <label>Código Wiener (obligatorio)</label>
+        <input type="text" name="codigo_wiener" required>
+
+        <label>Código original (opcional)</label>
+        <input type="text" name="codigo_original">
+
+        <label>Nombre (obligatorio)</label>
+        <input type="text" name="nombre" required>
+
+        <label>Descripción (opcional)</label>
+        <textarea name="descripcion"></textarea>
+
+        <label>Equipo (opcional)</label>
+        <input type="text" name="equipo">
+
+        <label>Estado</label>
+        <select name="estado">
+          <option value="Activo" selected>Activo</option>
+          <option value="Inactivo">Inactivo</option>
+        </select>
+
+        <div class="actions">
+          <button type="submit">Guardar repuesto</button>
+          <a class="btn" href="{{ url_for("search_get") }}">Volver al buscador</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Wiener Servicios - Login</title>
+  <style>
+    body{margin:0; font-family:system-ui,Segoe UI,Arial; background:#0b0f1a; color:#e9eefc; min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px;}
+    .card{width:min(520px,100%); border:1px solid rgba(255,255,255,.12); border-radius:18px; background:rgba(255,255,255,.04); padding:22px; box-shadow:0 20px 60px rgba(0,0,0,.35);}
+    .top{display:flex; gap:12px; align-items:center; margin-bottom:14px;}
+    .logo{width:44px;height:44px;border-radius:12px;border:1px solid rgba(255,255,255,.12); overflow:hidden; background:rgba(255,255,255,.06); display:flex; align-items:center; justify-content:center;}
+    .logo img{width:100%;height:100%;object-fit:cover}
+    h1{margin:0;font-size:18px}
+    p{margin:6px 0 16px 0; color:#aeb8d6; font-size:13px; line-height:1.35}
+    input{width:100%; padding:12px; border-radius:12px; border:1px solid rgba(255,255,255,.12); background:rgba(15,22,38,.8); color:#e9eefc; outline:none; font-size:14px;}
+    button{margin-top:10px; width:100%; padding:12px; border-radius:12px; border:1px solid rgba(255,255,255,.12); background:rgba(78,163,255,.22); color:#e9eefc; font-weight:700; cursor:pointer;}
+    .msg{margin-top:12px; font-size:13px;}
+    .error{color:#ff4e6a}
+    .ok{color:#44d19d}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="top">
+      <div class="logo">
+        <img src="{{ url_for('static', filename='images/logo-wiener.png') }}" alt="Wiener"
+             onerror="this.style.display='none'; this.parentElement.textContent='W';"/>
+      </div>
+      <div>
+        <h1>Wiener Servicios</h1>
+        <p>Acceso para servicio técnico</p>
+      </div>
+    </div>
+
+    <form method="post" action="{{ url_for('login_post') }}">
+      <input type="password" name="password" placeholder="Contraseña" required autofocus>
+      <button type="submit">Entrar</button>
+    </form>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="msg {{category}}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+  </div>
+</body>
+</html>
